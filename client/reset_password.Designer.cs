@@ -28,93 +28,65 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
             label2 = new Label();
-            label3 = new Label();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
-            button1 = new Button();
+            ConfirmBtn = new Button();
+            label1 = new Label();
+            EmailTextBox = new TextBox();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Arial", 9F);
-            label1.Location = new Point(25, 66);
-            label1.Name = "label1";
-            label1.Size = new Size(110, 17);
-            label1.TabIndex = 0;
-            label1.Text = "Tên Đăng Nhập";
-            label1.Click += label1_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Arial", 9F);
-            label2.Location = new Point(25, 111);
+            label2.Location = new Point(22, 83);
             label2.Name = "label2";
-            label2.Size = new Size(99, 17);
+            label2.Size = new Size(42, 15);
             label2.TabIndex = 1;
-            label2.Text = "Email đăng ký";
+            label2.Text = "Email ";
             // 
-            // label3
+            // ConfirmBtn
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Arial", 9F);
-            label3.Location = new Point(25, 152);
-            label3.Name = "label3";
-            label3.Size = new Size(96, 17);
-            label3.TabIndex = 2;
-            label3.Text = "Mật khẩu mới";
+            ConfirmBtn.BackColor = Color.Blue;
+            ConfirmBtn.FlatStyle = FlatStyle.Popup;
+            ConfirmBtn.Font = new Font("Arial", 9F);
+            ConfirmBtn.ForeColor = Color.White;
+            ConfirmBtn.Location = new Point(231, 132);
+            ConfirmBtn.Margin = new Padding(3, 2, 3, 2);
+            ConfirmBtn.Name = "ConfirmBtn";
+            ConfirmBtn.Size = new Size(82, 34);
+            ConfirmBtn.TabIndex = 6;
+            ConfirmBtn.Text = "Xác nhận";
+            ConfirmBtn.UseVisualStyleBackColor = false;
+            ConfirmBtn.Click += ConfirmBtn_Click;
             // 
-            // textBox1
+            // label1
             // 
-            textBox1.Location = new Point(152, 66);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(206, 27);
-            textBox1.TabIndex = 3;
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            label1.Location = new Point(22, 22);
+            label1.Name = "label1";
+            label1.Size = new Size(219, 30);
+            label1.TabIndex = 7;
+            label1.Text = "Khôi phục mật khẩu";
             // 
-            // textBox2
+            // EmailTextBox
             // 
-            textBox2.Location = new Point(152, 111);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(206, 27);
-            textBox2.TabIndex = 4;
-            // 
-            // textBox3
-            // 
-            textBox3.Location = new Point(152, 152);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(206, 27);
-            textBox3.TabIndex = 5;
-            // 
-            // button1
-            // 
-            button1.BackColor = Color.Blue;
-            button1.FlatStyle = FlatStyle.Popup;
-            button1.Font = new Font("Arial", 9F);
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(264, 211);
-            button1.Name = "button1";
-            button1.Size = new Size(94, 29);
-            button1.TabIndex = 6;
-            button1.Text = "Xác nhận";
-            button1.UseVisualStyleBackColor = false;
+            EmailTextBox.Location = new Point(70, 80);
+            EmailTextBox.Name = "EmailTextBox";
+            EmailTextBox.Size = new Size(243, 23);
+            EmailTextBox.TabIndex = 8;
             // 
             // reset_password
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(422, 337);
-            Controls.Add(button1);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
-            Controls.Add(textBox1);
-            Controls.Add(label3);
-            Controls.Add(label2);
+            ClientSize = new Size(369, 253);
+            Controls.Add(EmailTextBox);
             Controls.Add(label1);
+            Controls.Add(ConfirmBtn);
+            Controls.Add(label2);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "reset_password";
             Text = "reset_password";
             FormClosed += reset_password_FormClosed;
@@ -123,13 +95,13 @@
         }
 
         #endregion
-
-        private Label label1;
         private Label label2;
         private Label label3;
         private TextBox textBox1;
         private TextBox textBox2;
         private TextBox textBox3;
-        private Button button1;
+        private Button ConfirmBtn;
+        private Label label1;
+        private TextBox EmailTextBox;
     }
 }

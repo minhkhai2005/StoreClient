@@ -54,6 +54,7 @@
             PasswordBox.PasswordChar = '*';
             PasswordBox.Size = new Size(200, 23);
             PasswordBox.TabIndex = 1;
+            PasswordBox.UseSystemPasswordChar = true;
             // 
             // label1
             // 

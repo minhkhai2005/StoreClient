@@ -8,88 +8,66 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static client.Home;
+using DatabaseClass;
+using Microsoft.VisualBasic.Devices;
 
 namespace client
 {
     public partial class Inventory : Form
     {
-        private DataGridView dgvInventory = new DataGridView { Dock = DockStyle.Bottom, Height = 300 };
-        private ComboBox cmbFilter = new ComboBox { Left = 20, Top = 20, Width = 150 };
-        private TextBox txtSearch = new TextBox { Left = 200, Top = 20, Width = 200, PlaceholderText = "Tìm sản phẩm..." };
-        private Button btnUpdate = new Button { Text = "Cập nhật kho", Left = 420, Top = 20 };
-
-        private List<Product> products;
+        public List<DatabaseAccess.Inventory> inventoryList { get; set; } = new List<DatabaseAccess.Inventory>();
+        public Dictionary<string, DatabaseAccess.Product> productDictionary { get; set; } = new Dictionary<string, DatabaseAccess.Product>();
+        List<DataGridViewRow> rowsSoruce = new List<DataGridViewRow>();
         public Inventory()
         {
             InitializeComponent();
+            TypeComboBox.Text = "Tất cả";
             Text = "Kho hàng";
-            Controls.Add(cmbFilter);
-            Controls.Add(txtSearch);
-            Controls.Add(btnUpdate);
-            Controls.Add(dgvInventory);
-
-            cmbFilter.Items.AddRange(new string[] { "Tất cả", "Available", "Unavailable" });
-            cmbFilter.SelectedIndex = 0;
-            cmbFilter.SelectedIndexChanged += (s, e) => LoadData();
-            txtSearch.TextChanged += (s, e) => LoadData();
-            btnUpdate.Click += (s, e) => LoadData();
-
-            LoadMockData();
-            LoadData();
         }
-        private void LoadMockData()
+        // update data to dataGridview method
+        public void UpdateData()
         {
-            products = new List<Product>
+            foreach (var inventory in inventoryList)
             {
-                new Product { Id = "P001", Name = "Sản phẩm A", Category = "Loại 1", Quantity = 10, Status = "Available" },
-                new Product { Id = "P002", Name = "Sản phẩm B", Category = "Loại 2", Quantity = 0, Status = "Unavailable" },
-                new Product { Id = "P003", Name = "Sản phẩm C", Category = "Loại 1", Quantity = 5, Status = "Available" },
-            };
-        }
-
-        private void LoadData()
-        {
-            string filter = cmbFilter.SelectedItem.ToString();
-            string keyword = txtSearch.Text.ToLower();
-
-            var filtered = products.Where(p =>
-                (filter == "Tất cả" || p.Status == filter) &&
-                (p.Name.ToLower().Contains(keyword) || p.Id.ToLower().Contains(keyword))
-            ).ToList();
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Mã SP");
-            table.Columns.Add("Tên SP");
-            table.Columns.Add("Loại");
-            table.Columns.Add("Số lượng");
-            table.Columns.Add("Trạng thái");
-
-            foreach (var p in filtered)
-            {
-                table.Rows.Add(p.Id, p.Name, p.Category, p.Quantity, p.Status);
+                var product = productDictionary[inventory.Product_ID];
+                InventoryDataGridView.Rows.Add(
+                    inventory.Product_ID,
+                    productDictionary[inventory.Product_ID].Product_Name,
+                    productDictionary[inventory.Product_ID].Product_Price.ToString(),
+                    inventory.Inventory_Stock.ToString(),
+                    inventory.Inventory_AlertQuantity.ToString(),
+                    inventory.Inventory_Status ? "Available" : "Unavailable"
+                );
             }
-
-            dgvInventory.DataSource = table;
-
+            rowsSoruce = InventoryDataGridView.Rows.Cast<DataGridViewRow>().ToList();
         }
 
-        public class Product
+        private void SearchTextBox_TextChanged(object sender, EventArgs e)
         {
-            public string Id { get; set; }
-            public string Name { get; set; }
-            public string Category { get; set; }
-            public int Quantity { get; set; }
-            public string Status { get; set; }
+            search();
         }
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void TypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            search();
+        }
+        private void search()
         {
 
+            string filter = TypeComboBox.Text;
+            string keyword = SearchTextBox.Text.ToLower();
+            List<DataGridViewRow> filteredRows = rowsSoruce
+                .Where(row =>
+                    !row.IsNewRow && // Bỏ dòng trống
+                    (filter == "Tất cả" || row.Cells[5].Value?.ToString() == filter) &&
+                    (
+                        row.Cells[1].Value?.ToString().ToLower().Contains(keyword) == true ||
+                        row.Cells[0].Value?.ToString().ToLower().Contains(keyword) == true ||
+                        keyword == ""
+                    )
+                )
+                .ToList();
+            InventoryDataGridView.Rows.Clear();
+            InventoryDataGridView.Rows.AddRange(filteredRows.ToArray());
         }
-
-        private void Kho_Load(object sender, EventArgs e)
-        {
-
-        }
-
     }
 }

@@ -7,7 +7,8 @@ namespace client
         public static class Session
         {
             public static string Email { get; set; }
-            public static string UID { get; set; }
+            public static string StoreID { get; set; }
+            public static DatabaseAccess.Store store { get; set; }
         }
         public SignInForm()
         {
@@ -41,6 +42,12 @@ namespace client
 
         private async void SignIn_Click(object sender, EventArgs e)
         {
+            //check if there is any store with this email
+            if (DatabaseAccess.GetStoreByEmail(EmailBox.Text) == null)
+            {
+                MessageBox.Show("Tài khoản hoặc mật khẩu không đúng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             var result = await FirebaseAuthentication.SignIn(EmailBox.Text, PasswordBox.Text);
             if (result.Item1)
             {
@@ -48,9 +55,12 @@ namespace client
                 this.DialogResult = DialogResult.OK;
                 Session.Email = EmailBox.Text;
                 DatabaseAccess.CurrentEmail = EmailBox.Text; // Lưu email vào DatabaseAccess
-
-                Session.UID = result.Item2; // Lưu UID vào Session
-                this.Close();
+                Session.store = DatabaseAccess.GetStoreByEmail(EmailBox.Text);
+                Session.StoreID = Session.store.Store_ID;
+                Home home = new Home();
+                home.store = Session.store; // Truyền store vào Home
+                home.Show();
+                this.Hide();
             }
             else
             {
