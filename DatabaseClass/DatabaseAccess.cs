@@ -129,14 +129,35 @@ namespace DatabaseClass
                     connection.Execute(sqlQuery, this);
                 }
             }
+            public Shift GetShift(int day)
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = "SELECT * FROM Shift WHERE Employee_ID = @EmployeeID AND Day_of_Week = @DayOfWeek";
+                    return connection.QueryFirstOrDefault<Shift>(sqlQuery, new { EmployeeID = this.Employee_ID, DayOfWeek = day });
+                }
+            }
         }
         public class Customer
         {
             public string Customer_ID { get; set; }
             public string Customer_Name { get; set; }
             public string Customer_Phone { get; set; }
+            public string Customer_Email { get; set; }
             public bool Customer_Gender { get; set; }
             public string Store_ID { get; set; }
+
+            public static object GetStoreByID(string code)
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = "SELECT * FROM Customer WHERE Customer_ID = @Customer_ID";
+                    return connection.QueryFirstOrDefault<Customer>(sqlQuery, new { Customer_ID = code });
+                }
+            }
+
             public void UpdateCustomer()
             {
                 using (var connection = new SqlConnection(connectionString))
@@ -149,6 +170,18 @@ namespace DatabaseClass
                                 Store_ID = @Store_ID
                             WHERE Customer_ID = @Customer_ID";
                     connection.Execute(sqlQuery, this);
+                }
+            }
+            public static void CreateNewCustomer(Customer customer)
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = @"INSERT INTO Customer 
+                        (Customer_ID, Customer_Name, Customer_Phone, Customer_Email, Customer_Gender, Store_ID) 
+                        VALUES 
+                        (@Customer_ID, @Customer_Name, @Customer_Phone, @Customer_Email, @Customer_Gender, @Store_ID)";
+                    connection.Execute(sqlQuery, customer);
                 }
             }
         }
@@ -409,6 +442,15 @@ namespace DatabaseClass
                     return connection.QueryFirstOrDefault<Invoice>(sqlQuery, new { Invoice_ID = id });
                 }
             }
+            public static void CreateNewInvoice(Invoice invoice)
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = "INSERT INTO Invoice (Invoice_ID, Employee_ID, Customer_ID, Invoice_TotalAmount, Invoice_Status, Invoice_Note, Invoice_TotalQuantity, Invoice_Date) VALUES (@Invoice_ID, @Employee_ID, @Customer_ID, @Invoice_TotalAmount, @Invoice_Status, @Invoice_Note, @Invoice_TotalQuantity, @Invoice_Date)";
+                    connection.Execute(sqlQuery, invoice);
+                }
+            }
         }
         public class InvoiceDetail
         {
@@ -439,7 +481,16 @@ namespace DatabaseClass
                     return connection.Query<InvoiceDetail>(sqlQuery, new { Invoice_ID = invoiceID }).ToList();
                 }
             }
-            
+            public static void CreateNewInvoiceDetail(InvoiceDetail invoiceDetail)
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sqlQuery = "INSERT INTO InvoiceDetail (Invoice_ID, Product_ID, InvoiceDetail_Quantity, InvoiceDetail_UnitPrice, InvoiceDetail_TotalPrice) VALUES (@Invoice_ID, @Product_ID, @InvoiceDetail_Quantity, @InvoiceDetail_UnitPrice, @InvoiceDetail_TotalPrice)";
+                    connection.Execute(sqlQuery, invoiceDetail);
+                }
+            }
+
         }
         public class Shift
         {
@@ -479,7 +530,7 @@ namespace DatabaseClass
                                 Shift_Start = @Shift_Start, 
                                 Shift_Finish = @Shift_Finish, 
                                 Is_Active = @Is_Active
-                            WHERE Employee_ID = @Employee_ID";
+                            WHERE Employee_ID = @Employee_ID AND Day_of_Week = @Day_of_Week";
                     connection.Execute(sqlQuery, this);
                 }
             }
@@ -604,14 +655,12 @@ namespace DatabaseClass
             {
                 connection.Open();
                 string sqlQuery = @"SELECT 
-                e.Employee_ID, e.Employee_Name, e.Employee_Gender, e.Employee_Birth, e.Employee_PhoneNumber, e.Employee_Email, e.Employee_Salary, e.Store_Id
-                FROM Employee e
-                INNER JOIN Shift s ON e.Employee_ID = s.Employee_ID
-                INNER JOIN Store st ON e.Store_Id = st.Store_ID
-                WHERE e.Store_Id = @Store_ID  -- Thay đổi Store_ID tại đây
-                AND s.Day_of_Week = DATEPART(WEEKDAY, GETDATE())  -- Ngày trong tuần hiện tại
-                AND CAST(GETDATE() AS TIME) BETWEEN s.Shift_Start AND s.Shift_Finish  -- Đang trong giờ làm việc
-                AND s.Is_Active = 1;  -- Chỉ lấy ca làm việc đang hoạt động";
+                    e.Employee_ID, e.Employee_Name, e.Employee_Gender, e.Employee_Birth, e.Employee_PhoneNumber, e.Employee_Email, e.Employee_Salary, e.Store_Id
+                    FROM Employee e
+                    INNER JOIN Shift s ON e.Employee_ID = s.Employee_ID
+                    INNER JOIN Store st ON e.Store_Id = st.Store_ID
+                    WHERE e.Store_Id = 'S001'  -- Thay đổi Store_ID tại đây
+                    AND s.Is_Active = 1;  -- Chỉ lấy ca làm việc đang hoạt động";
                 var result = connection.Query<Employee>(sqlQuery, new { Store_ID = StoreID }).ToList(); 
                 return result;
             }
@@ -703,6 +752,16 @@ namespace DatabaseClass
             WHERE m.Manager_ID = @managerID  -- Replace with your specific Manager_ID
             ORDER BY s.Store_Name, e.Employee_Name;";
                 return connection.Query<Employee>(sqlQuery, new { managerID }).ToList();
+            }
+        }
+
+        public static List<Customer> GetCustomersByStoreID(string storeID)
+        {
+            using(var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string sqlQuery = "SELECT * FROM Customer WHERE Store_ID = @Store_ID";
+                return connection.Query<Customer>(sqlQuery, new { Store_ID = storeID }).ToList();
             }
         }
     }

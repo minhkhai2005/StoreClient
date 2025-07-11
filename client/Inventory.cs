@@ -17,7 +17,7 @@ namespace client
     {
         public List<DatabaseAccess.Inventory> inventoryList { get; set; } = new List<DatabaseAccess.Inventory>();
         public Dictionary<string, DatabaseAccess.Product> productDictionary { get; set; } = new Dictionary<string, DatabaseAccess.Product>();
-        List<DataGridViewRow> rowsSoruce = new List<DataGridViewRow>();
+        List<DataGridViewRow> rowsSource = new List<DataGridViewRow>();
         public Inventory()
         {
             InitializeComponent();
@@ -39,7 +39,7 @@ namespace client
                     inventory.Inventory_Status ? "Available" : "Unavailable"
                 );
             }
-            rowsSoruce = InventoryDataGridView.Rows.Cast<DataGridViewRow>().ToList();
+            rowsSource = InventoryDataGridView.Rows.Cast<DataGridViewRow>().ToList();
         }
 
         private void SearchTextBox_TextChanged(object sender, EventArgs e)
@@ -55,7 +55,7 @@ namespace client
 
             string filter = TypeComboBox.Text;
             string keyword = SearchTextBox.Text.ToLower();
-            List<DataGridViewRow> filteredRows = rowsSoruce
+            List<DataGridViewRow> filteredRows = rowsSource
                 .Where(row =>
                     !row.IsNewRow && // Bỏ dòng trống
                     (filter == "Tất cả" || row.Cells[5].Value?.ToString() == filter) &&

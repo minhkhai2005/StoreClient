@@ -28,144 +28,149 @@
         /// </summary>
         private void InitializeComponent()
         {
-            pictureBox1 = new PictureBox();
-            label1 = new Label();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            EmployeeDataGridView = new DataGridView();
+            EmployeeID = new DataGridViewTextBoxColumn();
+            EmployeeName = new DataGridViewTextBoxColumn();
+            EmployeeGender = new DataGridViewTextBoxColumn();
+            EmployeeBirth = new DataGridViewTextBoxColumn();
+            EmployeePhoneNumber = new DataGridViewTextBoxColumn();
+            EmployeeEmail = new DataGridViewTextBoxColumn();
+            panel1 = new Panel();
+            SearchTextBox = new TextBox();
             label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            label6 = new Label();
-            label7 = new Label();
-            label8 = new Label();
-            pictureBox2 = new PictureBox();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)EmployeeDataGridView).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
-            // pictureBox1
+            // tableLayoutPanel1
             // 
-            pictureBox1.Location = new Point(35, 42);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(98, 118);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
+            tableLayoutPanel1.ColumnCount = 1;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(EmployeeDataGridView, 0, 1);
+            tableLayoutPanel1.Controls.Add(panel1, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 10.1659756F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 89.83402F));
+            tableLayoutPanel1.Size = new Size(681, 482);
+            tableLayoutPanel1.TabIndex = 0;
             // 
-            // label1
+            // EmployeeDataGridView
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(162, 47);
-            label1.Name = "label1";
-            label1.Size = new Size(141, 20);
-            label1.TabIndex = 1;
-            label1.Text = "Tên : Trần Minh Khải";
+            EmployeeDataGridView.AllowUserToAddRows = false;
+            EmployeeDataGridView.AllowUserToDeleteRows = false;
+            EmployeeDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            EmployeeDataGridView.Columns.AddRange(new DataGridViewColumn[] { EmployeeID, EmployeeName, EmployeeGender, EmployeeBirth, EmployeePhoneNumber, EmployeeEmail });
+            EmployeeDataGridView.Dock = DockStyle.Fill;
+            EmployeeDataGridView.Location = new Point(3, 52);
+            EmployeeDataGridView.Name = "EmployeeDataGridView";
+            EmployeeDataGridView.ReadOnly = true;
+            EmployeeDataGridView.Size = new Size(675, 427);
+            EmployeeDataGridView.TabIndex = 0;
+            // 
+            // EmployeeID
+            // 
+            EmployeeID.Frozen = true;
+            EmployeeID.HeaderText = "Mã";
+            EmployeeID.Name = "EmployeeID";
+            EmployeeID.ReadOnly = true;
+            // 
+            // EmployeeName
+            // 
+            EmployeeName.Frozen = true;
+            EmployeeName.HeaderText = "Tên";
+            EmployeeName.Name = "EmployeeName";
+            EmployeeName.ReadOnly = true;
+            // 
+            // EmployeeGender
+            // 
+            EmployeeGender.Frozen = true;
+            EmployeeGender.HeaderText = "Giới tính";
+            EmployeeGender.Name = "EmployeeGender";
+            EmployeeGender.ReadOnly = true;
+            // 
+            // EmployeeBirth
+            // 
+            EmployeeBirth.Frozen = true;
+            EmployeeBirth.HeaderText = "Ngày sinh";
+            EmployeeBirth.Name = "EmployeeBirth";
+            EmployeeBirth.ReadOnly = true;
+            // 
+            // EmployeePhoneNumber
+            // 
+            EmployeePhoneNumber.Frozen = true;
+            EmployeePhoneNumber.HeaderText = "Số điện thoại";
+            EmployeePhoneNumber.Name = "EmployeePhoneNumber";
+            EmployeePhoneNumber.ReadOnly = true;
+            // 
+            // EmployeeEmail
+            // 
+            EmployeeEmail.Frozen = true;
+            EmployeeEmail.HeaderText = "Email";
+            EmployeeEmail.Name = "EmployeeEmail";
+            EmployeeEmail.ReadOnly = true;
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.White;
+            panel1.Controls.Add(SearchTextBox);
+            panel1.Controls.Add(label2);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(675, 43);
+            panel1.TabIndex = 1;
+            // 
+            // SearchTextBox
+            // 
+            SearchTextBox.Location = new Point(84, 9);
+            SearchTextBox.Name = "SearchTextBox";
+            SearchTextBox.Size = new Size(288, 23);
+            SearchTextBox.TabIndex = 3;
+            SearchTextBox.TextChanged += SearchTextBox_TextChanged;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(162, 110);
+            label2.Location = new Point(21, 12);
             label2.Name = "label2";
-            label2.Size = new Size(104, 20);
+            label2.Size = new Size(57, 15);
             label2.TabIndex = 2;
-            label2.Text = "Vị trí : Kế Toán";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(162, 140);
-            label3.Name = "label3";
-            label3.Size = new Size(70, 20);
-            label3.TabIndex = 3;
-            label3.Text = "Ca : Sáng";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(162, 77);
-            label4.Name = "label4";
-            label4.Size = new Size(114, 20);
-            label4.TabIndex = 4;
-            label4.Text = "Năm sinh : 2005";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(162, 288);
-            label5.Name = "label5";
-            label5.Size = new Size(114, 20);
-            label5.TabIndex = 9;
-            label5.Text = "Năm sinh : 2005";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(162, 351);
-            label6.Name = "label6";
-            label6.Size = new Size(70, 20);
-            label6.TabIndex = 8;
-            label6.Text = "Ca : Sáng";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(162, 321);
-            label7.Name = "label7";
-            label7.Size = new Size(104, 20);
-            label7.TabIndex = 7;
-            label7.Text = "Vị trí : Kế Toán";
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(162, 258);
-            label8.Name = "label8";
-            label8.Size = new Size(173, 20);
-            label8.TabIndex = 6;
-            label8.Text = "Tên : Nguyễn Quang khải";
-            // 
-            // pictureBox2
-            // 
-            pictureBox2.Location = new Point(35, 253);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(98, 118);
-            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox2.TabIndex = 5;
-            pictureBox2.TabStop = false;
+            label2.Text = "Tìm kiếm";
             // 
             // NhanVien
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(782, 481);
-            Controls.Add(label5);
-            Controls.Add(label6);
-            Controls.Add(label7);
-            Controls.Add(label8);
-            Controls.Add(pictureBox2);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(pictureBox1);
+            ClientSize = new Size(681, 482);
+            Controls.Add(tableLayoutPanel1);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "NhanVien";
-            Text = "NhanVien";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            Text = "Nhân viên";
+            Shown += NhanVien_Shown;
+            tableLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)EmployeeDataGridView).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private PictureBox pictureBox1;
-        private Label label1;
+        private TableLayoutPanel tableLayoutPanel1;
+        private DataGridView EmployeeDataGridView;
+        private DataGridViewTextBoxColumn EmployeeID;
+        private DataGridViewTextBoxColumn EmployeeName;
+        private DataGridViewTextBoxColumn EmployeeGender;
+        private DataGridViewTextBoxColumn EmployeeBirth;
+        private DataGridViewTextBoxColumn EmployeePhoneNumber;
+        private DataGridViewTextBoxColumn EmployeeEmail;
+        private Panel panel1;
+        private TextBox SearchTextBox;
         private Label label2;
-        private Label label3;
-        private Label label4;
-        private Label label5;
-        private Label label6;
-        private Label label7;
-        private Label label8;
-        private PictureBox pictureBox2;
     }
 }

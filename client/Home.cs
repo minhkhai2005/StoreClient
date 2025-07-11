@@ -3,46 +3,88 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using DatabaseClass;
+using Authentication;
+using static client.SignInForm;
+using StoreClient;
+using static System.Windows.Forms.DataGridViewRow;
 
 namespace client
 {
     public partial class Home : Form
     {
         public DatabaseAccess.Store store;
-        private List<DatabaseAccess.Inventory> inventoryList;
-        private Dictionary<string, DatabaseAccess.Product> productDictionary;
+        private List<DatabaseAccess.Inventory> inventoryList = new List<DatabaseAccess.Inventory>();
+        private List<DatabaseAccess.Product> productList = new List<DatabaseAccess.Product>();
+        private Dictionary<string, DatabaseAccess.Product> productDictionary = new Dictionary<string, DatabaseAccess.Product>();
+        private Dictionary<string, int> temporaryInvoiceDetails = new Dictionary<string, int>();
+        private List<DataGridViewRow> rowsSource = new List<DataGridViewRow>();
+        private List<DatabaseAccess.Employee> employees = new List<DatabaseAccess.Employee>();
+        private List<DatabaseAccess.Employee> onDutyEmployee = new List<DatabaseAccess.Employee>();
+        double total = 0;
         public Home()
         {
             InitializeComponent();
+            numericUpDown1.Value = 1;
+            EmployeeComboBox.DataSource = onDutyEmployee;
+            EmployeeComboBox.DisplayMember = "Employee_Name";
+            EmployeeComboBox.ValueMember = "Employee_ID";
         }
-
-        private void Home_Load(object sender, EventArgs e)
+        private void FetchData()
         {
             inventoryList = DatabaseAccess.GetInventoriesByStoreID(store.Store_ID);
-            productDictionary = new Dictionary<string, DatabaseAccess.Product>();
+            productList = DatabaseAccess.GetProductsByStoreID(store.Store_ID);
+            employees = DatabaseAccess.GetEmployeesByStoreID(store.Store_ID);
+        }
+        private void FetchOnDutyEmployee()
+        {
+            onDutyEmployee.Clear();
+            onDutyEmployee = DatabaseAccess.GetOnDutyEmployee(store.Store_ID);
+        }
+        private void Home_Load(object sender, EventArgs e)
+        {
+            FetchData();
+            // build product dictionary
+            foreach (var product in productList)
+            {
+                productDictionary[product.Product_ID] = product;
+            }
+
+            // build inventory dictionary
             foreach (var inventory in inventoryList)
             {
-                var product = DatabaseAccess.GetProductByID(inventory.Product_ID);
+                var product = productDictionary[inventory.Product_ID];
                 if (product != null)
                 {
-                    productDictionary[product.Product_ID] = product;
+                    DataGridViewRow newRow = new DataGridViewRow();
+                    if (inventory.Inventory_Status)
+                    {
+                        newRow.CreateCells(AvailableProductDataGridView);
+                        newRow.Cells[0].Value = product.Product_ID;
+                        newRow.Cells[1].Value = product.Product_Name;
+                        newRow.Cells[2].Value = product.Product_Price.ToString();
+                        // add to rows source
+                        rowsSource.Add(newRow);
+                    }
                 }
             }
+            AvailableProductDataGridView.Rows.Clear();
+            AvailableProductDataGridView.Rows.AddRange(rowsSource.ToArray());
         }
 
         private void homeToolStripMenuItem_Click(object sender, EventArgs e)
         {
         }
 
-        private void tạoHóaĐơnToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InvoiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            InvoiceForm invoiceForm = new InvoiceForm();
-            invoiceForm.ShowDialog();
+            Invoice invoice = new Invoice();
+            invoice.Show();
         }
 
-        private void nhânViênToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void nhânViênToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NhanVien nhanVien = new NhanVien();
+            await Task.Run(() => nhanVien.FetchEmployeesList(store.Store_ID));
             nhanVien.ShowDialog();
         }
 
@@ -73,7 +115,7 @@ namespace client
             if (r == DialogResult.Yes)
             {
                 store.Store_Status = false;
-                Task.Run(()=>store.UpdateStore());
+                Task.Run(() => store.UpdateStore());
                 CloseStatusMenu.Checked = true;
                 OpenStatusMenu.Checked = false;
             }
@@ -89,6 +131,220 @@ namespace client
                 CloseStatusMenu.Checked = false;
                 OpenStatusMenu.Checked = true;
             }
+        }
+
+        private void StartShift_Click(object sender, EventArgs e)
+        {
+            Shift shift = new Shift(true);
+            shift.ShowDialog();
+        }
+
+        private void EndShift_Click(object sender, EventArgs e)
+        {
+            Shift shift = new Shift(false);
+            shift.ShowDialog();
+        }
+
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            AddInvoiceDetail();
+        }
+        private void AddInvoiceDetail()
+        {
+            var selectedRow = AvailableProductDataGridView.CurrentCell.OwningRow;
+            if (selectedRow == null) return;
+            string productId = selectedRow.Cells[0].Value.ToString();
+            if (!temporaryInvoiceDetails.ContainsKey(productId))
+            {
+                temporaryInvoiceDetails[productId] = 0;
+            }
+            temporaryInvoiceDetails[productId] += (int)numericUpDown1.Value;
+            RefreshInvoiceDetail();
+        }
+        private void RefreshInvoiceDetail()
+        {
+            InvoiceDetailDataGridView.Rows.Clear();
+            foreach (var item in temporaryInvoiceDetails)
+            {
+                if (productDictionary.TryGetValue(item.Key, out var product))
+                {
+                    DataGridViewRow row = new DataGridViewRow();
+                    row.CreateCells(InvoiceDetailDataGridView);
+                    row.Cells[0].Value = product.Product_ID;
+                    row.Cells[1].Value = product.Product_Name;
+                    row.Cells[2].Value = product.Product_Price;
+                    row.Cells[3].Value = item.Value;
+                    row.Cells[4].Value = product.Product_Price * item.Value;
+                    InvoiceDetailDataGridView.Rows.Add(row);
+                }
+            }
+            total = 0;
+            foreach (var item in temporaryInvoiceDetails)
+            {
+                if (productDictionary.TryGetValue(item.Key, out var product))
+                {
+                    total += product.Product_Price * item.Value;
+                }
+            }
+            TotalLabel.Text = total.ToString();
+        }
+
+        private void AvailableProductDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            AddInvoiceDetail();
+        }
+
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            search();
+        }
+        private void search()
+        {
+
+            string keyword = searchTextBox.Text.ToLower();
+            List<DataGridViewRow> filteredRows = rowsSource
+                .Where(row =>
+                    !row.IsNewRow && // Bỏ dòng trống
+                    (
+                        row.Cells[1].Value?.ToString().ToLower().Contains(keyword) == true ||
+                        row.Cells[0].Value?.ToString().ToLower().Contains(keyword) == true ||
+                        keyword == ""
+                    )
+                )
+                .ToList();
+            AvailableProductDataGridView.Rows.Clear();
+            AvailableProductDataGridView.Rows.AddRange(filteredRows.ToArray());
+        }
+        private void RemoveInvoiceDetail()
+        {
+            try
+            {
+                var selectedRow = InvoiceDetailDataGridView.CurrentCell.OwningRow;
+                if (selectedRow == null) return;
+                string productId = selectedRow.Cells[0].Value.ToString();
+                temporaryInvoiceDetails.Remove(productId);
+                RefreshInvoiceDetail();
+            }
+            catch
+            {
+                return;
+            }
+           
+        }
+        private void deleteItemBtn_Click(object sender, EventArgs e)
+        {
+            RemoveInvoiceDetail();
+        }
+
+        private void resetBtn_Click(object sender, EventArgs e)
+        {
+            temporaryInvoiceDetails.Clear();
+            InvoiceDetailDataGridView.Rows.Clear();
+            TotalLabel.Text = "0";
+            numericUpDown1.Value = 1;
+            total = 0;
+        }
+
+        private async void payBtn_Click(object sender, EventArgs e)
+        {
+            // ask user to confirm
+            var r = MessageBox.Show("Xác nhận thanh toán?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (r == DialogResult.No)
+            {
+                return;
+            }
+            // check if there are any products in the invoice
+            if (temporaryInvoiceDetails.Count == 0)
+            {
+                MessageBox.Show("Không có sản phẩm nào trong hóa đơn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            // check responsible employee
+            if (EmployeeComboBox.SelectedItem == null || EmployeeComboBox.SelectedValue == null)
+            {
+                MessageBox.Show("Vui lòng chọn nhân viên phụ trách!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // new invoice 
+            DatabaseAccess.Invoice newInvoice = new DatabaseAccess.Invoice();
+            newInvoice.Invoice_ID = GenerateRandomCode();
+            newInvoice.Employee_ID = EmployeeComboBox.SelectedValue.ToString();
+            newInvoice.Invoice_TotalAmount = 0;
+            newInvoice.Invoice_TotalQuantity = 0;
+            newInvoice.Invoice_Date = DateTime.Now;
+            newInvoice.Invoice_Status = "Paid";
+            newInvoice.Invoice_Note = null;
+
+            // new invoice detail list
+            List<DatabaseAccess.InvoiceDetail> invoiceDetails = new List<DatabaseAccess.InvoiceDetail>();
+            foreach (var invoiceDetail in temporaryInvoiceDetails)
+            {
+                DatabaseAccess.InvoiceDetail newInvoiceDetail = new DatabaseAccess.InvoiceDetail();
+                newInvoiceDetail.Invoice_ID = newInvoice.Invoice_ID;
+                newInvoiceDetail.Product_ID = invoiceDetail.Key;
+                newInvoiceDetail.InvoiceDetail_Quantity = invoiceDetail.Value;
+                if (productDictionary.TryGetValue(invoiceDetail.Key, out var product))
+                {
+                    newInvoiceDetail.InvoiceDetail_UnitPrice = product.Product_Price;
+                }
+                newInvoiceDetail.InvoiceDetail_TotalPrice = newInvoiceDetail.InvoiceDetail_UnitPrice * newInvoiceDetail.InvoiceDetail_Quantity;
+                invoiceDetails.Add(newInvoiceDetail);
+            }
+            // get customer information from database
+            Customers getCustomer = new Customers(true);
+            getCustomer.ShowDialog();
+            if (getCustomer.DialogResult == DialogResult.OK)
+            {
+                newInvoice.Customer_ID = getCustomer.selectedCustomer.Customer_ID;
+            }
+            else
+            {
+                newInvoice.Customer_ID = null; // nếu không chọn khách hàng thì để null
+            }
+
+            // update database
+            await Task.Run(() => DatabaseAccess.Invoice.CreateNewInvoice(newInvoice));
+            await Task.Run(() =>
+            {
+                foreach (var invoiceDetail in invoiceDetails)
+                {
+                    DatabaseAccess.InvoiceDetail.CreateNewInvoiceDetail(invoiceDetail);
+                    // update inventory
+                    if (DatabaseAccess.Inventory.GetInventoryByID(Session.StoreID, invoiceDetail.Product_ID) is DatabaseAccess.Inventory inventory)
+                    {
+                        inventory.Inventory_Stock -= invoiceDetail.InvoiceDetail_Quantity;
+                        inventory.UpdateInventory();
+                    }
+                }
+            }
+            );
+            MessageBox.Show("Thanh toán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // reset invoice details
+            resetBtn_Click(sender, e);
+        }
+        public static string GenerateRandomCode()
+        {
+            var rand = new Random();
+            string code;
+
+            do
+            {
+                int number = rand.Next(0, 100000000);
+                code = $"IN{number}";
+            }
+            while (DatabaseAccess.Invoice.GetInvoiceByID(code) != null);
+
+            return code;
+        }
+
+        private void EmployeeComboBox_Click(object sender, EventArgs e)
+        {
+            // fetch on duty employees
+            FetchOnDutyEmployee();
+            EmployeeComboBox.DataSource = onDutyEmployee;
+            EmployeeComboBox.DisplayMember = "Employee_Name";
+            EmployeeComboBox.ValueMember = "Employee_ID";
         }
     }
 }
