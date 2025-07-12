@@ -444,6 +444,8 @@ namespace client
             else
             {
                 chatTimer.Stop();
+            }
+        }
 
         private void kháchHàngToolStripMenuItem_Click(object sender, EventArgs e)
         {
