@@ -659,7 +659,7 @@ namespace DatabaseClass
                     FROM Employee e
                     INNER JOIN Shift s ON e.Employee_ID = s.Employee_ID
                     INNER JOIN Store st ON e.Store_Id = st.Store_ID
-                    WHERE e.Store_Id = 'S001'  -- Thay đổi Store_ID tại đây
+                    WHERE e.Store_Id = @Store_ID  -- Thay đổi Store_ID tại đây
                     AND s.Is_Active = 1;  -- Chỉ lấy ca làm việc đang hoạt động";
                 var result = connection.Query<Employee>(sqlQuery, new { Store_ID = StoreID }).ToList(); 
                 return result;

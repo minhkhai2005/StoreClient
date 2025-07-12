@@ -63,7 +63,14 @@ namespace client
             {
                 productDictionary[product.Product_ID] = product;
             }
+            UpdateDataGridView();
 
+            // Gọi load chat ngay khi vào form
+            await LoadChatHistory();
+        }
+
+        private void UpdateDataGridView()
+        {
             // build inventory dictionary
             foreach (var inventory in inventoryList)
             {
@@ -84,8 +91,6 @@ namespace client
             }
             AvailableProductDataGridView.Rows.Clear();
             AvailableProductDataGridView.Rows.AddRange(rowsSource.ToArray());
-            // Gọi load chat ngay khi vào form
-            await LoadChatHistory();
         }
 
         private void homeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -108,6 +113,8 @@ namespace client
         private void khoHàngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Inventory inventory = new Inventory();
+            FetchData();
+            foreach (var product in productList) productDictionary[product.Product_ID] = product;
             inventory.inventoryList = inventoryList;
             inventory.productDictionary = productDictionary;
             inventory.UpdateData();
@@ -418,7 +425,7 @@ namespace client
                 richTextBox1.Clear();
                 foreach (var msg in messages)
                 {
-                                       
+
                     string who = msg.SenderId == store.Store_ID ? "Bạn" : managerName;
 
                     string content = string.IsNullOrEmpty(msg.Content) ? "(Không có nội dung)" : msg.Content;
@@ -467,6 +474,14 @@ namespace client
                 OpenStatusMenu.Checked = false;
                 CloseStatusMenu.Checked = true;
 
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 1)
+            {
+                UpdateDataGridView();
             }
         }
     }
