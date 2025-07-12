@@ -16,6 +16,7 @@ namespace client
     public partial class Home : Form
     {
         public DatabaseAccess.Store store;
+        private DatabaseAccess.Manager manager;
         private List<DatabaseAccess.Inventory> inventoryList = new List<DatabaseAccess.Inventory>();
         private List<DatabaseAccess.Product> productList = new List<DatabaseAccess.Product>();
         private Dictionary<string, DatabaseAccess.Product> productDictionary = new Dictionary<string, DatabaseAccess.Product>();
@@ -47,6 +48,7 @@ namespace client
             inventoryList = DatabaseAccess.GetInventoriesByStoreID(store.Store_ID);
             productList = DatabaseAccess.GetProductsByStoreID(store.Store_ID);
             employees = DatabaseAccess.GetEmployeesByStoreID(store.Store_ID);
+            manager = DatabaseAccess.GetManagerByUID(store.Manager_ID);
         }
         private void FetchOnDutyEmployee()
         {
@@ -380,7 +382,7 @@ namespace client
                 return;
             }
             MessageBox.Show($"Nội dung gửi: {message}"); // Debug
-            await SendMessageToApi(store.Store_ID, "kanekirito1279@gmail.com", message);
+            await SendMessageToApi(store.Store_ID, manager.Manager_Email, message);
             richTextBox2.Clear();
             await LoadChatHistory();
         }
@@ -406,7 +408,7 @@ namespace client
         {
             using (var client = new System.Net.Http.HttpClient())
             {
-                var response = await client.GetAsync($"http://localhost:55135/api/message/history?user1={store.Store_ID}&user2=kanekirito1279@gmail.com");
+                var response = await client.GetAsync($"http://localhost:55135/api/message/history?user1={store.Store_ID}&user2={manager.Manager_Email}");
                 response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
                 var messages = System.Text.Json.JsonSerializer.Deserialize<List<Message>>(json, new System.Text.Json.JsonSerializerOptions
@@ -417,7 +419,7 @@ namespace client
                 foreach (var msg in messages)
                 {
                                        
-                                       string who = msg.SenderId == store.Store_ID ? "Bạn" : managerName;
+                    string who = msg.SenderId == store.Store_ID ? "Bạn" : managerName;
 
                     string content = string.IsNullOrEmpty(msg.Content) ? "(Không có nội dung)" : msg.Content;
                     richTextBox1.AppendText($"{who}: {content}\n");
