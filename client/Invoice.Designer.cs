@@ -101,6 +101,7 @@
             InvoiceDataGridView.ReadOnly = true;
             InvoiceDataGridView.Size = new Size(799, 551);
             InvoiceDataGridView.TabIndex = 1;
+            InvoiceDataGridView.CellDoubleClick += InvoiceDataGridView_CellDoubleClick;
             // 
             // InvoiceID
             // 

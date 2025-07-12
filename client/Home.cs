@@ -121,7 +121,7 @@ namespace client
         {
             SignInForm loginForm = new SignInForm();
             loginForm.Show();
-            this.Hide();
+            this.Close();
         }
 
         private void CloseStatusMenu_Click(object sender, EventArgs e)
@@ -244,7 +244,7 @@ namespace client
             {
                 return;
             }
-           
+
         }
         private void deleteItemBtn_Click(object sender, EventArgs e)
         {
@@ -444,6 +444,25 @@ namespace client
             else
             {
                 chatTimer.Stop();
+
+        private void kháchHàngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Customers customers = new Customers(false);
+            customers.Show();
+        }
+
+        private void Home_Shown(object sender, EventArgs e)
+        {
+            if (store.Store_Status)
+            {
+                OpenStatusMenu.Checked = true;
+                CloseStatusMenu.Checked = false;
+            }
+            else
+            {
+                OpenStatusMenu.Checked = false;
+                CloseStatusMenu.Checked = true;
+
             }
         }
     }

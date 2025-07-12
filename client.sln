@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseClass", "DatabaseCl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "FirebaseAuthentication\Authentication.csproj", "{585C4AF8-1988-47DF-A11E-135025525A4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoice_Detail", "InvoiceDetailForm\Invoice_Detail.csproj", "{00F1B0D6-6BA2-4BAF-9BFA-EDA25C514C70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{585C4AF8-1988-47DF-A11E-135025525A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{585C4AF8-1988-47DF-A11E-135025525A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{585C4AF8-1988-47DF-A11E-135025525A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F1B0D6-6BA2-4BAF-9BFA-EDA25C514C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F1B0D6-6BA2-4BAF-9BFA-EDA25C514C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F1B0D6-6BA2-4BAF-9BFA-EDA25C514C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F1B0D6-6BA2-4BAF-9BFA-EDA25C514C70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

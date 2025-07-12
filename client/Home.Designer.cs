@@ -40,9 +40,13 @@
             trạngTháiCửaHàngToolStripMenuItem = new ToolStripMenuItem();
             CloseStatusMenu = new ToolStripMenuItem();
             OpenStatusMenu = new ToolStripMenuItem();
+            kháchHàngToolStripMenuItem = new ToolStripMenuItem();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
+            richTextBox1 = new RichTextBox();
+            richTextBox2 = new RichTextBox();
+            button1 = new Button();
             createInvoice = new TabPage();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel1 = new Panel();
@@ -71,9 +75,6 @@
             payBtn = new Button();
             resetBtn = new Button();
             deleteItemBtn = new Button();
-            richTextBox1 = new RichTextBox();
-            richTextBox2 = new RichTextBox();
-            button1 = new Button();
             menuStrip1.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -120,7 +121,7 @@
             // 
             // myAccountToolStripMenuItem
             // 
-            myAccountToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { InvoiceMenu, EmployeeMenu, InventoryMenu, trạngTháiCửaHàngToolStripMenuItem });
+            myAccountToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { InvoiceMenu, EmployeeMenu, InventoryMenu, trạngTháiCửaHàngToolStripMenuItem, kháchHàngToolStripMenuItem });
             myAccountToolStripMenuItem.Name = "myAccountToolStripMenuItem";
             myAccountToolStripMenuItem.Size = new Size(62, 20);
             myAccountToolStripMenuItem.Text = "Quản Lý";
@@ -184,6 +185,13 @@
             OpenStatusMenu.Text = "Mở cửa";
             OpenStatusMenu.Click += OpenStatusMenu_Click;
             // 
+            // kháchHàngToolStripMenuItem
+            // 
+            kháchHàngToolStripMenuItem.Name = "kháchHàngToolStripMenuItem";
+            kháchHàngToolStripMenuItem.Size = new Size(179, 22);
+            kháchHàngToolStripMenuItem.Text = "Khách hàng";
+            kháchHàngToolStripMenuItem.Click += kháchHàngToolStripMenuItem_Click;
+            // 
             // tabControl1
             // 
             tabControl1.Controls.Add(tabPage1);
@@ -222,6 +230,35 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 13.4991121F));
             tableLayoutPanel1.Size = new Size(780, 563);
             tableLayoutPanel1.TabIndex = 0;
+            // 
+            // richTextBox1
+            // 
+            tableLayoutPanel1.SetColumnSpan(richTextBox1, 2);
+            richTextBox1.Dock = DockStyle.Fill;
+            richTextBox1.Location = new Point(3, 3);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.Size = new Size(774, 481);
+            richTextBox1.TabIndex = 0;
+            richTextBox1.Text = "";
+            // 
+            // richTextBox2
+            // 
+            richTextBox2.Dock = DockStyle.Fill;
+            richTextBox2.Location = new Point(3, 490);
+            richTextBox2.Name = "richTextBox2";
+            richTextBox2.Size = new Size(683, 70);
+            richTextBox2.TabIndex = 1;
+            richTextBox2.Text = "";
+            // 
+            // button1
+            // 
+            button1.Dock = DockStyle.Fill;
+            button1.Location = new Point(692, 490);
+            button1.Name = "button1";
+            button1.Size = new Size(85, 70);
+            button1.TabIndex = 2;
+            button1.Text = "Gửi";
+            button1.UseVisualStyleBackColor = true;
             // 
             // createInvoice
             // 
@@ -506,35 +543,6 @@
             deleteItemBtn.UseVisualStyleBackColor = true;
             deleteItemBtn.Click += deleteItemBtn_Click;
             // 
-            // richTextBox1
-            // 
-            tableLayoutPanel1.SetColumnSpan(richTextBox1, 2);
-            richTextBox1.Dock = DockStyle.Fill;
-            richTextBox1.Location = new Point(3, 3);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(774, 481);
-            richTextBox1.TabIndex = 0;
-            richTextBox1.Text = "";
-            // 
-            // richTextBox2
-            // 
-            richTextBox2.Dock = DockStyle.Fill;
-            richTextBox2.Location = new Point(3, 490);
-            richTextBox2.Name = "richTextBox2";
-            richTextBox2.Size = new Size(683, 70);
-            richTextBox2.TabIndex = 1;
-            richTextBox2.Text = "";
-            // 
-            // button1
-            // 
-            button1.Dock = DockStyle.Fill;
-            button1.Location = new Point(692, 490);
-            button1.Name = "button1";
-            button1.Size = new Size(85, 70);
-            button1.TabIndex = 2;
-            button1.Text = "Gửi";
-            button1.UseVisualStyleBackColor = true;
-            // 
             // Home
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -548,6 +556,7 @@
             Text = "Home";
             FormClosed += Home_FormClosed;
             Load += Home_Load;
+            Shown += Home_Shown;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             tabControl1.ResumeLayout(false);
@@ -618,5 +627,6 @@
         private RichTextBox richTextBox1;
         private RichTextBox richTextBox2;
         private Button button1;
+        private ToolStripMenuItem kháchHàngToolStripMenuItem;
     }
 }
