@@ -7,6 +7,9 @@ using Authentication;
 using static client.SignInForm;
 using StoreClient;
 using static System.Windows.Forms.DataGridViewRow;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.Net.Http;
 
 namespace client
 {
@@ -21,6 +24,9 @@ namespace client
         private List<DatabaseAccess.Employee> employees = new List<DatabaseAccess.Employee>();
         private List<DatabaseAccess.Employee> onDutyEmployee = new List<DatabaseAccess.Employee>();
         double total = 0;
+        private System.Windows.Forms.Timer chatTimer;
+        // Thêm biến lưu tên manager (giả sử truyền vào khi khởi tạo hoặc hardcode tạm)
+        private string managerName = "Quản lý"; // Có thể truyền từ ngoài vào hoặc lấy từ API
         public Home()
         {
             InitializeComponent();
@@ -28,6 +34,13 @@ namespace client
             EmployeeComboBox.DataSource = onDutyEmployee;
             EmployeeComboBox.DisplayMember = "Employee_Name";
             EmployeeComboBox.ValueMember = "Employee_ID";
+            button1.Click += button1_Click;
+            // Tự động load chat khi mở form
+            this.tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
+            // Khởi tạo timer cập nhật chat
+            chatTimer = new System.Windows.Forms.Timer();
+            chatTimer.Interval = 2000; // 2 giây
+            chatTimer.Tick += chatTimer_Tick;
         }
         private void FetchData()
         {
@@ -40,7 +53,7 @@ namespace client
             onDutyEmployee.Clear();
             onDutyEmployee = DatabaseAccess.GetOnDutyEmployee(store.Store_ID);
         }
-        private void Home_Load(object sender, EventArgs e)
+        private async void Home_Load(object sender, EventArgs e)
         {
             FetchData();
             // build product dictionary
@@ -69,6 +82,8 @@ namespace client
             }
             AvailableProductDataGridView.Rows.Clear();
             AvailableProductDataGridView.Rows.AddRange(rowsSource.ToArray());
+            // Gọi load chat ngay khi vào form
+            await LoadChatHistory();
         }
 
         private void homeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -345,6 +360,91 @@ namespace client
             EmployeeComboBox.DataSource = onDutyEmployee;
             EmployeeComboBox.DisplayMember = "Employee_Name";
             EmployeeComboBox.ValueMember = "Employee_ID";
+        }
+
+        public class Message
+        {
+            public int Id { get; set; }
+            public string SenderId { get; set; }
+            public string ReceiverId { get; set; }
+            public string Content { get; set; }
+            public DateTime Timestamp { get; set; }
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            string message = richTextBox2.Text.Trim();
+            if (string.IsNullOrEmpty(message))
+            {
+                MessageBox.Show("Vui lòng nhập nội dung tin nhắn!");
+                return;
+            }
+            MessageBox.Show($"Nội dung gửi: {message}"); // Debug
+            await SendMessageToApi(store.Store_ID, "kanekirito1279@gmail.com", message);
+            richTextBox2.Clear();
+            await LoadChatHistory();
+        }
+
+        private async Task SendMessageToApi(string senderId, string receiverId, string content)
+        {
+            var msg = new
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Content = content
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(msg);
+            var data = new System.Net.Http.StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                var response = await client.PostAsync("http://localhost:55135/api/message/send", data);
+                response.EnsureSuccessStatusCode();
+            }
+        }
+
+        private async Task LoadChatHistory()
+        {
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                var response = await client.GetAsync($"http://localhost:55135/api/message/history?user1={store.Store_ID}&user2=kanekirito1279@gmail.com");
+                response.EnsureSuccessStatusCode();
+                var json = await response.Content.ReadAsStringAsync();
+                var messages = System.Text.Json.JsonSerializer.Deserialize<List<Message>>(json, new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                richTextBox1.Clear();
+                foreach (var msg in messages)
+                {
+                                       
+                                       string who = msg.SenderId == store.Store_ID ? "Bạn" : managerName;
+
+                    string content = string.IsNullOrEmpty(msg.Content) ? "(Không có nội dung)" : msg.Content;
+                    richTextBox1.AppendText($"{who}: {content}\n");
+                }
+            }
+        }
+
+        private async void chatTimer_Tick(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == tabPage1)
+            {
+                await LoadChatHistory();
+            }
+        }
+
+        private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Nếu chuyển sang tab Tin nhắn thì bật timer và load chat
+            if (tabControl1.SelectedTab == tabPage1)
+            {
+                await LoadChatHistory();
+                chatTimer.Start();
+            }
+            else
+            {
+                chatTimer.Stop();
+            }
         }
     }
 }
