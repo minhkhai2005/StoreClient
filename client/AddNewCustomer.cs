@@ -38,7 +38,7 @@ namespace StoreClient
             var r = MessageBox.Show("Xác nhận thêm khách hàng?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (r == DialogResult.No) return;
 
-            string name = CustomerEmailTextBox.Text.Trim();
+            string name = CustomerNameTextBox.Text.Trim();
             string phone = CustomerPhoneTextBox.Text.Trim();
             string email = CustomerEmailTextBox.Text.Trim();
 

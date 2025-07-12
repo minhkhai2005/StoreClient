@@ -76,5 +76,21 @@ namespace StoreClient
         {
             FetchInvoicesList();
         }
+
+        private void InvoiceDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= InvoiceDataGridView.Rows.Count)
+                return; // Kiểm tra chỉ số hàng hợp lệ
+            DataGridViewRow selectedRow = InvoiceDataGridView.Rows[e.RowIndex];
+            string invoiceID = selectedRow.Cells[0].Value?.ToString();
+            string storeID = Session.StoreID;
+            if (string.IsNullOrEmpty(invoiceID))
+            {
+                MessageBox.Show("Không tìm thấy thông tin hóa đơn.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            InvoiceDetail invoiceDetailForm = new InvoiceDetail(invoiceID, storeID);
+            invoiceDetailForm.ShowDialog();
+        }
     }
 }
